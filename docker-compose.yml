@@ -93,6 +93,7 @@ services:
         echo "Airflow init complete."
     environment:
       <<: *airflow-common-env
+      AIRFLOW_CONN_PIPELINE_CONFIG_DB: 'postgresql://airflow:airflow@postgres:5432/airflow'
     user: "${AIRFLOW_UID:-50000}:0"
     depends_on:
       postgres:
