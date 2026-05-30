@@ -3,3 +3,83 @@
 [2026-05-30T03:29:07.361+0000] {manager.py:471} INFO - Checking for new files in /opt/airflow/dags every 300 seconds
 [2026-05-30T03:29:07.363+0000] {manager.py:738} INFO - Searching for files in /opt/airflow/dags
 [2026-05-30T03:29:07.375+0000] {manager.py:741} INFO - There are 0 files in /opt/airflow/dags
+[2026-05-30T03:34:07.863+0000] {manager.py:738} INFO - Searching for files in /opt/airflow/dags
+[2026-05-30T03:34:07.869+0000] {manager.py:741} INFO - There are 0 files in /opt/airflow/dags
+[2026-05-30T03:36:38.072+0000] {manager.py:451} INFO - Exiting gracefully upon receiving signal 15
+[2026-05-30T03:36:41.328+0000] {manager.py:469} INFO - Processing files using up to 2 processes at a time 
+[2026-05-30T03:36:41.329+0000] {manager.py:470} INFO - Process each file at most once every 30 seconds
+[2026-05-30T03:36:41.329+0000] {manager.py:471} INFO - Checking for new files in /opt/airflow/dags every 300 seconds
+[2026-05-30T03:36:41.330+0000] {manager.py:738} INFO - Searching for files in /opt/airflow/dags
+[2026-05-30T03:36:41.333+0000] {manager.py:741} INFO - There are 1 files in /opt/airflow/dags
+[2026-05-30T03:36:41.365+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                   PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  ----------
+/opt/airflow/dags/factory/dag_factory.py     31  0.01s             0           0
+================================================================================
+[2026-05-30T03:37:11.597+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                   PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py     32  0.00s             0           0  0.02s           2026-05-30T03:36:41
+================================================================================
+[2026-05-30T03:37:41.857+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                   PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py     39  0.00s             0           0  0.03s           2026-05-30T03:37:11
+================================================================================
+[2026-05-30T03:38:12.098+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                   PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py     46  0.00s             0           0  0.03s           2026-05-30T03:37:41
+================================================================================
+[2026-05-30T03:38:42.355+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py                           0           0  0.04s           2026-05-30T03:38:41
+================================================================================
+[2026-05-30T03:39:12.617+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py                           1           0  0.16s           2026-05-30T03:39:11
+================================================================================
+[2026-05-30T03:39:42.887+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py                           1           0  0.06s           2026-05-30T03:39:41
+================================================================================
+[2026-05-30T03:40:13.100+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py                           2           0  0.10s           2026-05-30T03:40:12
+================================================================================
+[2026-05-30T03:40:43.407+0000] {manager.py:879} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/factory/dag_factory.py                           2           0  0.08s           2026-05-30T03:40:42
+================================================================================
