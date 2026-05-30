@@ -581,3 +581,112 @@
 [2026-05-30T05:36:03.992+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:03.992+0000] {dag.py:3036} INFO - Sync 1 DAGs
 [2026-05-30T05:36:04.000+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:04.000+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-30 02:00:00+00:00, run_after=2026-05-31 02:00:00+00:00
 [2026-05-30T05:36:04.006+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.052 seconds
+[2026-05-30T05:36:34.202+0000] {processor.py:161} INFO - Started process (PID=74) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:36:34.203+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:36:34.207+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.207+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:36:34.222+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.221+0000] {base.py:83} INFO - Using connection ID 'pipeline_config_db' for task execution.
+[2026-05-30T05:36:34.226+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.226+0000] {dag_factory.py:74} INFO - DAG factory fetched 1 active pipelines.
+[2026-05-30T05:36:34.229+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.229+0000] {dag_factory.py:168} INFO - DAG factory registered DAG: orders_pg_to_s3_daily
+[2026-05-30T05:36:34.231+0000] {processor.py:840} INFO - DAG(s) 'orders_pg_to_s3_daily' retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:36:34.238+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.238+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2026-05-30T05:36:34.248+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:36:34.248+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-30 02:00:00+00:00, run_after=2026-05-31 02:00:00+00:00
+[2026-05-30T05:36:34.253+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.054 seconds
+[2026-05-30T05:37:04.462+0000] {processor.py:161} INFO - Started process (PID=75) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:04.463+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:37:04.466+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.465+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:04.483+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.482+0000] {base.py:83} INFO - Using connection ID 'pipeline_config_db' for task execution.
+[2026-05-30T05:37:04.487+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.487+0000] {dag_factory.py:74} INFO - DAG factory fetched 1 active pipelines.
+[2026-05-30T05:37:04.491+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.491+0000] {dag_factory.py:168} INFO - DAG factory registered DAG: orders_pg_to_s3_daily
+[2026-05-30T05:37:04.494+0000] {processor.py:840} INFO - DAG(s) 'orders_pg_to_s3_daily' retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:04.505+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.505+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2026-05-30T05:37:04.513+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:04.513+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-30 02:00:00+00:00, run_after=2026-05-31 02:00:00+00:00
+[2026-05-30T05:37:04.519+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.061 seconds
+[2026-05-30T05:37:34.736+0000] {processor.py:161} INFO - Started process (PID=76) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:34.737+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:37:34.739+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.738+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:34.756+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.756+0000] {base.py:83} INFO - Using connection ID 'pipeline_config_db' for task execution.
+[2026-05-30T05:37:34.761+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.761+0000] {dag_factory.py:74} INFO - DAG factory fetched 1 active pipelines.
+[2026-05-30T05:37:34.765+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.765+0000] {dag_factory.py:168} INFO - DAG factory registered DAG: orders_pg_to_s3_daily
+[2026-05-30T05:37:34.769+0000] {processor.py:840} INFO - DAG(s) 'orders_pg_to_s3_daily' retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:37:34.779+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.779+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2026-05-30T05:37:34.790+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:37:34.790+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-30 02:00:00+00:00, run_after=2026-05-31 02:00:00+00:00
+[2026-05-30T05:37:34.797+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.066 seconds
+[2026-05-30T05:38:04.971+0000] {processor.py:161} INFO - Started process (PID=77) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:04.971+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:38:04.973+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:04.973+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:04.988+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:04.988+0000] {base.py:83} INFO - Using connection ID 'pipeline_config_db' for task execution.
+[2026-05-30T05:38:04.992+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:04.992+0000] {dag_factory.py:74} INFO - DAG factory fetched 1 active pipelines.
+[2026-05-30T05:38:04.995+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:04.995+0000] {dag_factory.py:168} INFO - DAG factory registered DAG: orders_pg_to_s3_daily
+[2026-05-30T05:38:04.997+0000] {processor.py:840} INFO - DAG(s) 'orders_pg_to_s3_daily' retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:05.007+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:05.006+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2026-05-30T05:38:05.018+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:05.018+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-30 02:00:00+00:00, run_after=2026-05-31 02:00:00+00:00
+[2026-05-30T05:38:05.025+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.058 seconds
+[2026-05-30T05:38:30.731+0000] {processor.py:161} INFO - Started process (PID=31) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:30.734+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:38:30.736+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:30.736+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:30.761+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:38:30.760+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:38:30.761+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:38:30.762+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.033 seconds
+[2026-05-30T05:39:00.968+0000] {processor.py:161} INFO - Started process (PID=38) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:00.969+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:39:00.971+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:39:00.971+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:00.987+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:39:00.986+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:39:00.987+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:00.990+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.025 seconds
+[2026-05-30T05:39:31.227+0000] {processor.py:161} INFO - Started process (PID=45) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:31.227+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:39:31.228+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:39:31.228+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:31.238+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:39:31.238+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:39:31.238+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:39:31.241+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.016 seconds
+[2026-05-30T05:40:01.472+0000] {processor.py:161} INFO - Started process (PID=46) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:01.473+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:40:01.475+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:01.474+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:01.490+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:01.490+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:40:01.491+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:01.495+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.025 seconds
+[2026-05-30T05:40:27.203+0000] {processor.py:161} INFO - Started process (PID=37) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:27.206+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:40:27.214+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:27.213+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:27.242+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:27.242+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:40:27.244+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:27.246+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.044 seconds
+[2026-05-30T05:40:57.444+0000] {processor.py:161} INFO - Started process (PID=45) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:57.445+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:40:57.447+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:57.447+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:57.464+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:40:57.464+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:40:57.464+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:40:57.467+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.026 seconds
+[2026-05-30T05:41:27.662+0000] {processor.py:161} INFO - Started process (PID=58) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:27.663+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:41:27.664+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:41:27.664+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:27.677+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:41:27.677+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:41:27.677+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:27.680+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.021 seconds
+[2026-05-30T05:41:57.913+0000] {processor.py:161} INFO - Started process (PID=59) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:57.913+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:41:57.915+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:41:57.915+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:57.928+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:41:57.928+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:41:57.929+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:41:57.931+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.022 seconds
+[2026-05-30T05:42:28.184+0000] {processor.py:161} INFO - Started process (PID=60) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:42:28.186+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:42:28.190+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:42:28.190+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:42:28.216+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:42:28.216+0000] {dag_factory.py:78} ERROR - DAG factory failed to fetch configs: The conn_id `pipeline_config_db` isn't defined
+[2026-05-30T05:42:28.217+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:42:28.220+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.040 seconds
+[2026-05-30T05:43:15.000+0000] {processor.py:161} INFO - Started process (PID=31) to work on /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:43:15.002+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/factory/dag_factory.py for tasks to queue
+[2026-05-30T05:43:15.005+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.005+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:43:15.021+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.020+0000] {crypto.py:82} WARNING - empty cryptography key - values will not be stored encrypted.
+[2026-05-30T05:43:15.021+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.021+0000] {base.py:83} INFO - Using connection ID 'pipeline_config_db' for task execution.
+[2026-05-30T05:43:15.031+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.031+0000] {dag_factory.py:74} INFO - DAG factory fetched 1 active pipelines.
+[2026-05-30T05:43:15.033+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.033+0000] {dag_factory.py:168} INFO - DAG factory registered DAG: orders_pg_to_s3_daily
+[2026-05-30T05:43:15.042+0000] {processor.py:840} INFO - DAG(s) 'orders_pg_to_s3_daily' retrieved from /opt/airflow/dags/factory/dag_factory.py
+[2026-05-30T05:43:15.202+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.202+0000] {override.py:1769} INFO - Created Permission View: can edit on DAG:orders_pg_to_s3_daily
+[2026-05-30T05:43:15.207+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.207+0000] {override.py:1769} INFO - Created Permission View: can read on DAG:orders_pg_to_s3_daily
+[2026-05-30T05:43:15.210+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.209+0000] {override.py:1769} INFO - Created Permission View: can delete on DAG:orders_pg_to_s3_daily
+[2026-05-30T05:43:15.210+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.210+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2026-05-30T05:43:15.214+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.214+0000] {dag.py:3058} INFO - Creating ORM DAG for orders_pg_to_s3_daily
+[2026-05-30T05:43:15.219+0000] {logging_mixin.py:188} INFO - [2026-05-30T05:43:15.219+0000] {dag.py:3823} INFO - Setting next_dagrun for orders_pg_to_s3_daily to 2026-05-29 02:00:00+00:00, run_after=2026-05-30 02:00:00+00:00
+[2026-05-30T05:43:15.225+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/factory/dag_factory.py took 0.226 seconds
