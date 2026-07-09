@@ -1,0 +1,36 @@
+# Self-Healing ETL - Default Configuration
+
+airflow:
+  executor: CeleryExecutor
+  fernet_key: ${FERNET_KEY}
+  load_examples: false
+  dags_are_paused_at_creation: true
+
+connections:
+  pipeline_config_db:
+    conn_type: postgres
+    host: postgres
+    port: 5432
+    login: airflow
+    password: airflow
+    schema: airflow
+
+  minio_s3:
+    conn_type: s3
+    host: http://minio:9000
+    login: minioadmin
+    password: minioadmin
+    extra:
+      endpoint_url: http://minio:9000
+      region_name: us-east-1
+
+monitoring:
+  sla_check_interval_hours: 1
+  consecutive_failure_threshold: 3
+  failure_alert_window_hours: 6
+
+retry:
+  default_max_retries: 3
+  default_base_delay_seconds: 60
+  default_max_delay_seconds: 3600
+  strategy: exponential_backoff

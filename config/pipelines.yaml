@@ -1,0 +1,23 @@
+# Pipeline definitions that are seeded into the DB
+# These correspond to rows in pipeline_config.pipeline_definitions
+
+pipelines:
+  - pipeline_id: orders_pg_to_s3_daily
+    pipeline_name: "Orders: Postgres to S3 Daily"
+    schedule_interval: "0 2 * * *"
+    source_type: postgres
+    source_config:
+      conn_id: pipeline_config_db
+      schema: pipeline_config
+      table: task_run_metadata
+    dest_type: s3
+    dest_config:
+      conn_id: minio_s3
+      bucket: processed-data
+      prefix: orders/daily/
+    sla_minutes: 60
+    default_retries: 3
+    default_retry_delay_seconds: 300
+    tags:
+      - orders
+      - daily
