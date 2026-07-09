@@ -14,7 +14,9 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 
-from operators import PostgresExtractOperator, TransformOperator, S3LoadOperator
+from operators import (
+    PostgresExtractOperator, TransformOperator, S3LoadOperator,
+)
 from callbacks import on_success_callback, on_failure_callback, on_retry_callback
 from utils.retry_utils import get_retry_policy, compute_backoff_delay
 
@@ -125,14 +127,12 @@ def build_dag(config: dict) -> DAG:
     pipeline_id = config["pipeline_id"]
 
     with dag:
-        conn_id = source_config.get("conn_id", "pipeline_config_db")
         extract_policy = get_retry_policy(pipeline_id, "OperationalError")
         extract_retries = extract_policy["max_retries"] if extract_policy else config["default_retries"]
         extract_delay = compute_backoff_delay(1, extract_policy) if extract_policy else config["default_retry_delay_seconds"]
 
         t_extract = PostgresExtractOperator(
             task_id="extract",
-            conn_id=conn_id,
             source_config=source_config,
             retries=extract_retries,
             retry_delay=timedelta(seconds=extract_delay),
@@ -149,14 +149,12 @@ def build_dag(config: dict) -> DAG:
             retry_delay=timedelta(seconds=transform_delay),
         )
 
-        dest_conn_id = dest_config.get("conn_id", "minio_s3")
         load_policy = get_retry_policy(pipeline_id, "ClientError")
         load_retries = load_policy["max_retries"] if load_policy else config["default_retries"]
         load_delay = compute_backoff_delay(1, load_policy) if load_policy else config["default_retry_delay_seconds"]
 
         t_load = S3LoadOperator(
             task_id="load",
-            conn_id=dest_conn_id,
             dest_config=dest_config,
             retries=load_retries,
             retry_delay=timedelta(seconds=load_delay),

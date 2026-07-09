@@ -84,6 +84,13 @@ CREATE TABLE IF NOT EXISTS pipeline_config.backfill_requests (
     created_at          TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS pipeline_config.watermarks (
+    id                  SERIAL PRIMARY KEY,
+    source_table        VARCHAR(255) NOT NULL UNIQUE,
+    watermark_value     TIMESTAMP NOT NULL,
+    updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Seed data
 INSERT INTO pipeline_config.pipeline_definitions (
     pipeline_id, pipeline_name, schedule_interval,

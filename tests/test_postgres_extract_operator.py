@@ -5,41 +5,45 @@ from operators.postgres_extract_operator import PostgresExtractOperator
 
 
 class TestPostgresExtractOperator:
-    @patch("operators.postgres_extract_operator.EtlPostgresHook")
-    def test_execute_extracts_data(self, mock_hook_class):
-        mock_hook = MagicMock()
-        mock_hook_class.return_value = mock_hook
-        mock_hook.extract_data.return_value = [
-            ([{"id": 1, "name": "test"}], ["id", "name"])
-        ]
+    @patch("operators.postgres_extract_operator.get_source")
+    def test_execute_extracts_data(self, mock_get_source):
+        mock_source = MagicMock()
+        mock_get_source.return_value = mock_source
+        mock_source.extract.return_value = ([{"id": 1, "name": "test"}], ["id", "name"])
 
         context = {"ti": MagicMock()}
         op = PostgresExtractOperator(
             task_id="extract",
-            conn_id="test_conn",
-            source_config={"schema": "public", "table": "test_table"},
+            source_config={
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+            },
         )
 
         result = op.execute(context)
 
-        mock_hook.extract_data.assert_called_once_with("public", "test_table")
+        mock_source.extract.assert_called_once()
         assert result["rows"] == 1
-        context["ti"].xcom_push.assert_any_call(
-            key="extracted_rows", value=[{"id": 1, "name": "test"}]
-        )
+        mock_source.close.assert_called_once()
 
-    def test_execute_no_rows(self):
+    @patch("operators.postgres_extract_operator.get_source")
+    def test_execute_no_rows(self, mock_get_source):
+        mock_source = MagicMock()
+        mock_get_source.return_value = mock_source
+        mock_source.extract.return_value = ([], [])
+
         op = PostgresExtractOperator(
             task_id="extract",
-            conn_id="test_conn",
-            source_config={"schema": "public", "table": "empty_table"},
+            source_config={
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "empty_table",
+            },
         )
-        with patch("operators.postgres_extract_operator.EtlPostgresHook") as mock_cls:
-            mock_hook = MagicMock()
-            mock_cls.return_value = mock_hook
-            mock_hook.extract_data.return_value = []
 
-            context = {"ti": MagicMock()}
-            result = op.execute(context)
+        context = {"ti": MagicMock()}
+        result = op.execute(context)
 
-            assert result["rows"] == 0
+        assert result["rows"] == 0
+        mock_source.close.assert_called_once()
