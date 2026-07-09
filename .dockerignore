@@ -1,0 +1,13 @@
+.venv
+.venv/
+.git
+.git/
+.gitignore
+__pycache__
+*.pyc
+.env
+logs/
+dashboard/
+tests/
+*.md
+.venv

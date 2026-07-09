@@ -1,7 +1,10 @@
 version: '3.8'
 
 x-airflow-common: &airflow-common
-  image: apache/airflow:2.8.1-python3.11
+  image: ${AIRFLOW_IMAGE:-self-healing-etl:latest}
+  build:
+    context: .
+    dockerfile: Dockerfile
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__FERNET_KEY: '${FERNET_KEY}'
@@ -83,7 +86,6 @@ services:
     command:
       - -c
       - |
-        pip install apache-airflow==2.8.1 --quiet || true
         airflow db migrate
         airflow users create \
           --username admin \
