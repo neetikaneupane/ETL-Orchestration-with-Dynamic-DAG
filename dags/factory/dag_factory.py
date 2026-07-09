@@ -2,7 +2,7 @@
 dag_factory.py
 ==============
 Reads pipeline_definitions from Postgres at parse time and generates
-one Airflow DAG per active row. 
+one Airflow DAG per active row.
 
 Adding a row to the DB = new DAG appears in Airflow within 30 seconds.
 Deactivating a row (is_active=False) = DAG disappears.
@@ -12,8 +12,10 @@ import logging
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.python import PythonOperator
 from airflow.hooks.base import BaseHook
+
+from operators import PostgresExtractOperator, TransformOperator, S3LoadOperator
+from callbacks import on_success_callback, on_failure_callback, on_retry_callback
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +100,16 @@ def build_dag(config: dict) -> DAG:
         "email_on_retry": False,
     }
 
+    source_type = config["source_type"]
+    source_config = config["source_config"]
+    dest_type = config["dest_type"]
+    dest_config = config["dest_config"]
+    transform_config = config["transform_config"]
+
+    default_args.setdefault("on_success_callback", on_success_callback)
+    default_args.setdefault("on_failure_callback", on_failure_callback)
+    default_args.setdefault("on_retry_callback", on_retry_callback)
+
     dag = DAG(
         dag_id=config["pipeline_id"],
         description=config["pipeline_name"],
@@ -106,47 +118,31 @@ def build_dag(config: dict) -> DAG:
         catchup=config["catchup"],
         default_args=default_args,
         tags=config["tags"] or [],
-        max_active_runs=1,  # prevent overlapping runs
+        max_active_runs=1,
     )
 
-    # -----------------------------------------------------------------
-    # Tasks (placeholders for now — Week 2 Part 2 we make these real)
-    # -----------------------------------------------------------------
     with dag:
+        conn_id = source_config.get("conn_id", "pipeline_config_db")
 
-        def extract(**context):
-            log.info(f"[{config['pipeline_id']}] EXTRACT from {config['source_type']}")
-            log.info(f"Source config: {config['source_config']}")
-            # Push source config to XCom so next task can read it
-            context["ti"].xcom_push(key="source_config", value=config["source_config"])
-            return "extract_done"
-
-        def transform(**context):
-            log.info(f"[{config['pipeline_id']}] TRANSFORM")
-            log.info(f"Transform config: {config['transform_config']}")
-            return "transform_done"
-
-        def load(**context):
-            log.info(f"[{config['pipeline_id']}] LOAD to {config['dest_type']}")
-            log.info(f"Dest config: {config['dest_config']}")
-            return "load_done"
-
-        t_extract = PythonOperator(
+        t_extract = PostgresExtractOperator(
             task_id="extract",
-            python_callable=extract,
+            conn_id=conn_id,
+            source_config=source_config,
         )
 
-        t_transform = PythonOperator(
+        t_transform = TransformOperator(
             task_id="transform",
-            python_callable=transform,
+            transform_config=transform_config,
         )
 
-        t_load = PythonOperator(
+        dest_conn_id = dest_config.get("conn_id", "minio_s3")
+
+        t_load = S3LoadOperator(
             task_id="load",
-            python_callable=load,
+            conn_id=dest_conn_id,
+            dest_config=dest_config,
         )
 
-        # Define task order: extract → transform → load
         t_extract >> t_transform >> t_load
 
     return dag
