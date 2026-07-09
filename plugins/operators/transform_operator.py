@@ -3,12 +3,13 @@ import time
 from typing import Any, Dict, List, Optional
 
 from airflow.models import BaseOperator
+from utils.data_quality import run_quality_checks
 
 log = logging.getLogger(__name__)
 
 
 class TransformOperator(BaseOperator):
-    """Applies transformations to data extracted in the previous step."""
+    """Applies transformations and data quality checks to extracted data."""
 
     def __init__(self, transform_config: Optional[Dict[str, Any]] = None, **kwargs):
         super().__init__(**kwargs)
@@ -61,6 +62,13 @@ class TransformOperator(BaseOperator):
 
         duration = round(time.time() - started_at, 2)
         transformed_columns = list(transformed[0].keys()) if transformed else columns
+
+        quality_checks = self.transform_config.get("quality_checks", [])
+        if quality_checks and transformed:
+            failures = run_quality_checks(transformed, quality_checks)
+            ti.xcom_push(key="quality_failures", value=failures)
+            if failures:
+                log.warning(f"Quality failures: {failures}")
 
         ti.xcom_push(key="transformed_rows", value=transformed)
         ti.xcom_push(key="transform_duration", value=duration)
