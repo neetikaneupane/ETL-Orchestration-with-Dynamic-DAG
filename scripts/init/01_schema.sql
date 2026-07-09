@@ -95,3 +95,13 @@ INSERT INTO pipeline_config.pipeline_definitions (
     'postgres', '{"conn_id": "pipeline_config_db", "schema": "pipeline_config", "table": "task_run_metadata"}',
     's3', '{"conn_id": "minio_s3", "bucket": "processed-data", "prefix": "orders/daily/"}'
 ) ON CONFLICT (pipeline_id) DO NOTHING;
+
+-- Seed backfill request (for testing the backfill DAG)
+INSERT INTO pipeline_config.backfill_requests
+    (pipeline_id, gap_start_date, gap_end_date, status)
+VALUES (
+    'orders_pg_to_s3_daily',
+    '2024-06-01',
+    '2024-06-05',
+    'pending'
+) ON CONFLICT DO NOTHING;
