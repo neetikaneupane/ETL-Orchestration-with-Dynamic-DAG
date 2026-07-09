@@ -96,6 +96,15 @@ INSERT INTO pipeline_config.pipeline_definitions (
     's3', '{"conn_id": "minio_s3", "bucket": "processed-data", "prefix": "orders/daily/"}'
 ) ON CONFLICT (pipeline_id) DO NOTHING;
 
+-- Seed retry policies
+INSERT INTO pipeline_config.retry_policies
+    (pipeline_id, error_type, retry_strategy, max_retries, base_delay_seconds, max_delay_seconds, alert_on_failure)
+VALUES
+    ('orders_pg_to_s3_daily', 'OperationalError', 'exponential_backoff', 5, 30, 3600, TRUE),
+    ('orders_pg_to_s3_daily', 'InterfaceError',   'exponential_backoff', 3, 60, 1800, TRUE),
+    ('orders_pg_to_s3_daily', 'ClientError',      'exponential_backoff', 2, 120, 600, FALSE)
+ON CONFLICT (pipeline_id, error_type) DO NOTHING;
+
 -- Seed backfill request (for testing the backfill DAG)
 INSERT INTO pipeline_config.backfill_requests
     (pipeline_id, gap_start_date, gap_end_date, status)

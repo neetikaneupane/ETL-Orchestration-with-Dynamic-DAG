@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict
 
 from airflow.hooks.base import BaseHook
+from utils.retry_utils import get_retry_policy, compute_backoff_delay
 
 log = logging.getLogger(__name__)
 
@@ -63,12 +64,32 @@ def on_success_callback(context: Dict[str, Any]):
 
 def on_failure_callback(context: Dict[str, Any]):
     _log_metadata(context, "failed")
-    log.error(f"Task {context['ti'].task_id} FAILED.")
+    ti = context["ti"]
+    dag_id = context["dag"].dag_id
+    error_type = context.get("exception", None)
+    error_name = type(error_type).__name__ if error_type else "Unknown"
+    policy = get_retry_policy(dag_id, error_name)
+    if policy and policy.get("alert_on_failure"):
+        log.error(
+            f"ALERT: Task {ti.task_id} in {dag_id} failed with {error_name}. "
+            f"Policy recommends alert."
+        )
+    log.error(f"Task {ti.task_id} FAILED with {error_name}.")
 
 
 def on_retry_callback(context: Dict[str, Any]):
     _log_metadata(context, "retrying")
-    log.warning(f"Task {context['ti'].task_id} retrying...")
+    ti = context["ti"]
+    dag_id = context["dag"].dag_id
+    retry_count = ti.try_number - 1
+    error_type = context.get("exception", None)
+    error_name = type(error_type).__name__ if error_type else "Unknown"
+    policy = get_retry_policy(dag_id, error_name)
+    delay = compute_backoff_delay(retry_count, policy)
+    log.warning(
+        f"Retry #{retry_count} for {ti.task_id} in {dag_id} "
+        f"(error: {error_name}, backoff: {delay}s)"
+    )
 
 
 def sla_miss_callback(dag, task_list, blocking_task_list, slas, blocking_tis):
