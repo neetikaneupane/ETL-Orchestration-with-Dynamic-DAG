@@ -4,7 +4,7 @@ x-airflow-common: &airflow-common
   image: apache/airflow:2.8.1-python3.11
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__FERNET_KEY: '${FERNET_KEY}'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -12,6 +12,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     AIRFLOW_CONN_PIPELINE_CONFIG_DB: 'postgres://airflow:airflow@postgres:5432/airflow'
+    AIRFLOW_CONN_MINIO_S3: 's3://minioadmin:minioadmin@minio:9000?endpoint_url=http%3A%2F%2Fminio%3A9000'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
