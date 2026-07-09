@@ -91,7 +91,32 @@ CREATE TABLE IF NOT EXISTS pipeline_config.watermarks (
     updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Seed data
+-- Sample orders table (real source data for the demo pipeline)
+CREATE TABLE IF NOT EXISTS pipeline_config.sample_orders (
+    id              SERIAL PRIMARY KEY,
+    order_id        VARCHAR(50) NOT NULL UNIQUE,
+    customer_id     VARCHAR(50) NOT NULL,
+    product         VARCHAR(255) NOT NULL,
+    quantity        INTEGER NOT NULL DEFAULT 1,
+    unit_price      NUMERIC(10,2) NOT NULL,
+    total_amount    NUMERIC(10,2) NOT NULL,
+    status          VARCHAR(50) NOT NULL DEFAULT 'pending',
+    order_date      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Seed sample orders
+INSERT INTO pipeline_config.sample_orders
+    (order_id, customer_id, product, quantity, unit_price, total_amount, status, order_date)
+VALUES
+    ('ORD-001', 'CUST-1001', 'Widget A', 5, 19.99, 99.95, 'shipped',   '2024-06-01 08:30:00'),
+    ('ORD-002', 'CUST-1002', 'Widget B', 2, 49.99, 99.98, 'delivered', '2024-06-01 09:15:00'),
+    ('ORD-003', 'CUST-1001', 'Widget A', 1, 19.99, 19.99, 'pending',   '2024-06-02 10:00:00'),
+    ('ORD-004', 'CUST-1003', 'Widget C', 10, 9.99, 99.90, 'shipped',   '2024-06-02 11:45:00'),
+    ('ORD-005', 'CUST-1002', 'Widget B', 3, 49.99, 149.97, 'cancelled', '2024-06-03 07:20:00')
+ON CONFLICT (order_id) DO NOTHING;
+
+-- Pipeline definition pointing to sample_orders
 INSERT INTO pipeline_config.pipeline_definitions (
     pipeline_id, pipeline_name, schedule_interval,
     source_type, source_config, dest_type, dest_config
@@ -99,7 +124,7 @@ INSERT INTO pipeline_config.pipeline_definitions (
     'orders_pg_to_s3_daily',
     'Orders: Postgres to S3 Daily',
     '0 2 * * *',
-    'postgres', '{"conn_id": "pipeline_config_db", "schema": "pipeline_config", "table": "task_run_metadata"}',
+    'postgres', '{"conn_id": "pipeline_config_db", "schema": "pipeline_config", "table": "sample_orders", "incremental_column": "updated_at"}',
     's3', '{"conn_id": "minio_s3", "bucket": "processed-data", "prefix": "orders/daily/"}'
 ) ON CONFLICT (pipeline_id) DO NOTHING;
 
