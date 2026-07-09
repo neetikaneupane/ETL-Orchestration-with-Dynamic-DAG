@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.hooks.base import BaseHook
+from utils.alerting import notify_sla_breach, notify_consecutive_failures
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ def check_sla_breaches(**context):
                     (pipeline_id, dag_run_id, execution_date, breach_minutes)
                 VALUES (%s, NULL, %s, %s)
             """, (pipeline_id, execution_date, breach_minutes))
+            notify_sla_breach(pipeline_id, breach_minutes)
             log.warning(
                 f"SLA breach: {pipeline_id} exceeded {sla_minutes}m by {breach_minutes}m"
             )
@@ -133,6 +135,7 @@ def alert_on_consecutive_failures(**context):
         """)
         critical = cur.fetchall()
         for pipeline_id, failures in critical:
+            notify_consecutive_failures(pipeline_id, failures)
             log.error(
                 f"ALERT: {pipeline_id} has {failures} consecutive failures in last 6h"
             )

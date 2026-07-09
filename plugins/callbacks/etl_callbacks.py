@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from airflow.hooks.base import BaseHook
 from utils.retry_utils import get_retry_policy, compute_backoff_delay
+from utils.alerting import notify_pipeline_failure, notify_sla_breach
 
 log = logging.getLogger(__name__)
 
@@ -69,11 +70,10 @@ def on_failure_callback(context: Dict[str, Any]):
     error_type = context.get("exception", None)
     error_name = type(error_type).__name__ if error_type else "Unknown"
     policy = get_retry_policy(dag_id, error_name)
+    run_url = context.get("dag_run", None)
+    run_url = run_url.dag_id if run_url else None
     if policy and policy.get("alert_on_failure"):
-        log.error(
-            f"ALERT: Task {ti.task_id} in {dag_id} failed with {error_name}. "
-            f"Policy recommends alert."
-        )
+        notify_pipeline_failure(dag_id, ti.task_id, error_name, run_url)
     log.error(f"Task {ti.task_id} FAILED with {error_name}.")
 
 
