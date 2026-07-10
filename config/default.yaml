@@ -11,15 +11,15 @@ connections:
     conn_type: postgres
     host: postgres
     port: 5432
-    login: airflow
-    password: airflow
-    schema: airflow
+    login: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    schema: ${POSTGRES_DB}
 
   minio_s3:
     conn_type: s3
     host: http://minio:9000
-    login: minioadmin
-    password: minioadmin
+    login: ${MINIO_ROOT_USER}
+    password: ${MINIO_ROOT_PASSWORD}
     extra:
       endpoint_url: http://minio:9000
       region_name: us-east-1
