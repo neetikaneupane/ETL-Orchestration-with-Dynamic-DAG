@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+import psycopg2.sql as sql
 from hooks.etl_postgres_hook import EtlPostgresHook
 from .base_source import BaseSource
 
@@ -65,26 +66,33 @@ class PostgresSource(BaseSource):
             """, (f"{self.schema}.{self.table}", value))
             conn.commit()
 
-    def _build_query(self) -> Tuple[str, List[Any]]:
+    def _build_query(self) -> Tuple[sql.Composed, List[Any]]:
         """Build the extraction query, with optional incremental filter."""
-        base = f"SELECT * FROM {self.schema}.{self.table}"
+        base = sql.SQL("SELECT * FROM {schema}.{table}").format(
+            schema=sql.Identifier(self.schema),
+            table=sql.Identifier(self.table),
+        )
         params = []
 
         if self.incremental_column:
             watermark = self._get_watermark()
             if watermark:
-                base += f" WHERE {self.incremental_column} > %s"
+                base += sql.SQL(" WHERE {col} > %s").format(
+                    col=sql.Identifier(self.incremental_column)
+                )
                 params.append(watermark)
-            base += f" ORDER BY {self.incremental_column} ASC"
+            base += sql.SQL(" ORDER BY {col} ASC").format(
+                col=sql.Identifier(self.incremental_column)
+            )
 
         return base, params
 
-    def _fetch_chunk(self, query: str, params: List[Any],
+    def _fetch_chunk(self, query: sql.Composed, params: List[Any],
                      offset: int, limit: int) -> Tuple[List[Dict[str, Any]], List[str]]:
         """Fetch a single chunk of rows using a dedicated connection."""
         hook = EtlPostgresHook(self.conn_id)
         conn = hook.get_conn()
-        paginated = f"{query} LIMIT %s OFFSET %s"
+        paginated = query + sql.SQL(" LIMIT %s OFFSET %s")
         with conn.cursor() as cur:
             cur.execute(paginated, params + [limit, offset])
             columns = [desc[0] for desc in cur.description]

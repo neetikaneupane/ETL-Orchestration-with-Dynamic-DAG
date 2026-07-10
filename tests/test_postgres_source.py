@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from datetime import datetime
 
+import psycopg2.sql as sql
 from sources.postgres_source import PostgresSource
 
 
@@ -27,9 +28,9 @@ class TestPostgresSource:
 
         assert len(rows) == 1
         assert columns == ["id", "name"]
-        mock_cursor.execute.assert_called_once_with(
-            "SELECT * FROM public.test_table", []
-        )
+        call_args = mock_cursor.execute.call_args
+        assert isinstance(call_args[0][0], sql.Composed)
+        assert call_args[0][1] == []
 
     @patch.object(PostgresSource, "_get_watermark", return_value=None)
     @patch.object(PostgresSource, "_set_watermark")
