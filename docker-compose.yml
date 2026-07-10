@@ -1,5 +1,3 @@
-version: '3.8'
-
 x-airflow-common: &airflow-common
   image: ${AIRFLOW_IMAGE:-self-healing-etl:latest}
   build:
@@ -10,12 +8,12 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__FERNET_KEY: '${FERNET_KEY}'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
-    AIRFLOW_CONN_PIPELINE_CONFIG_DB: 'postgres://airflow:airflow@postgres:5432/airflow'
-    AIRFLOW_CONN_MINIO_S3: 's3://minioadmin:minioadmin@minio:9000?endpoint_url=http%3A%2F%2Fminio%3A9000'
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__CELERY__BROKER_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+    AIRFLOW_CONN_PIPELINE_CONFIG_DB: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}'
+    AIRFLOW_CONN_MINIO_S3: 's3://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000?endpoint_url=http%3A%2F%2Fminio%3A9000'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
@@ -32,16 +30,16 @@ services:
     image: postgres:15
     container_name: etl_postgres
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init:/docker-entrypoint-initdb.d
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -50,10 +48,11 @@ services:
   redis:
     image: redis:7.2-alpine
     container_name: etl_redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     expose:
       - 6379
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 30s
       retries: 50
@@ -65,8 +64,8 @@ services:
     container_name: etl_minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
     ports:
@@ -88,12 +87,12 @@ services:
       - |
         airflow db migrate
         airflow users create \
-          --username admin \
+          --username ${AIRFLOW_ADMIN_USER} \
           --firstname Admin \
           --lastname User \
           --role Admin \
           --email admin@example.com \
-          --password admin || true
+          --password ${AIRFLOW_ADMIN_PASSWORD} || true
         echo "Airflow init complete."
     environment:
       <<: *airflow-common-env
