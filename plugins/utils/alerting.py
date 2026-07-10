@@ -20,7 +20,7 @@ def _get_alert_config() -> Dict[str, Any]:
     try:
         from airflow.models import Variable
         return Variable.get("alert_config", deserialize_json=True) or {}
-    except Exception:
+    except (ValueError, KeyError):
         return {}
 
 

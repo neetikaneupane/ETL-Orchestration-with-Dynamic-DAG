@@ -35,7 +35,7 @@ class EtlS3Hook(BaseHook):
         client = self.get_client()
         try:
             client.head_bucket(Bucket=bucket)
-        except Exception:
+        except ClientError:
             client.create_bucket(Bucket=bucket)
             log.info(f"Created bucket: {bucket}")
 

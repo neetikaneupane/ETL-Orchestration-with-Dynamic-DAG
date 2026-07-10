@@ -12,6 +12,7 @@ import logging
 from datetime import datetime, timedelta
 
 from airflow import DAG
+from airflow.exceptions import AirflowNotFoundException
 from airflow.hooks.base import BaseHook
 
 from operators import (
@@ -79,7 +80,7 @@ def fetch_pipeline_configs():
         log.info(f"DAG factory fetched {len(rows)} active pipelines.")
         return [dict(row) for row in rows]
 
-    except Exception as e:
+    except (psycopg2.OperationalError, psycopg2.InterfaceError, AirflowNotFoundException) as e:
         log.error(f"DAG factory failed to fetch configs: {e}")
         return []
 
