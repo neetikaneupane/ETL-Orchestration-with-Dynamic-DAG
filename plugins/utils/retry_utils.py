@@ -8,21 +8,9 @@ Computes exponential backoff delays and effective retry limits.
 import logging
 from typing import Any, Dict, Optional
 
-from airflow.hooks.base import BaseHook
+from utils.db import get_pg_conn
 
 log = logging.getLogger(__name__)
-
-
-def _get_pg_conn():
-    conn_details = BaseHook.get_connection("pipeline_config_db")
-    import psycopg2
-    return psycopg2.connect(
-        host=conn_details.host,
-        port=conn_details.port or 5432,
-        dbname=conn_details.schema,
-        user=conn_details.login,
-        password=conn_details.password,
-    )
 
 
 def get_retry_policy(pipeline_id: str, error_type: str) -> Optional[Dict[str, Any]]:
@@ -31,26 +19,28 @@ def get_retry_policy(pipeline_id: str, error_type: str) -> Optional[Dict[str, An
     Falls back to the pipeline_definitions defaults if no specific policy exists.
     """
     try:
-        conn = _get_pg_conn()
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT retry_strategy, max_retries, base_delay_seconds,
-                       max_delay_seconds, alert_on_failure
-                FROM pipeline_config.retry_policies
-                WHERE pipeline_id = %s AND error_type = %s
-            """, (pipeline_id, error_type))
-            row = cur.fetchone()
-        conn.close()
+        conn = get_pg_conn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT retry_strategy, max_retries, base_delay_seconds,
+                           max_delay_seconds, alert_on_failure
+                    FROM pipeline_config.retry_policies
+                    WHERE pipeline_id = %s AND error_type = %s
+                """, (pipeline_id, error_type))
+                row = cur.fetchone()
 
-        if row:
-            return {
-                "strategy": row[0],
-                "max_retries": row[1],
-                "base_delay": row[2],
-                "max_delay": row[3],
-                "alert_on_failure": row[4],
-            }
-        return None
+            if row:
+                return {
+                    "strategy": row[0],
+                    "max_retries": row[1],
+                    "base_delay": row[2],
+                    "max_delay": row[3],
+                    "alert_on_failure": row[4],
+                }
+            return None
+        finally:
+            conn.close()
     except Exception as e:
         log.warning(f"Failed to fetch retry policy for {pipeline_id}/{error_type}: {e}")
         return None
