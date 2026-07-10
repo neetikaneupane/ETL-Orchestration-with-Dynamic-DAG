@@ -55,3 +55,34 @@ class TestDataQuality:
         ]
         failures = run_quality_checks(rows, checks)
         assert len(failures) >= 2
+
+    def test_check_not_null_empty_rows(self):
+        count, cols = check_not_null([], ["id"])
+        assert count == 0
+
+    def test_check_unique_empty_rows(self):
+        total, dups = check_unique([], "id")
+        assert dups == 0
+
+    def test_check_range_empty_rows(self):
+        count, vals = check_range([], "price", min_val=0, max_val=100)
+        assert count == 0
+
+    def test_check_range_none_values(self):
+        rows = [{"price": None}, {"price": 50}]
+        count, vals = check_range(rows, "price", min_val=0, max_val=100)
+        assert count == 0
+
+    def test_run_quality_checks_unknown_type(self):
+        rows = [{"id": 1}]
+        checks = [{"type": "unknown_check", "column": "id"}]
+        failures = run_quality_checks(rows, checks)
+        assert len(failures) == 0
+
+    def test_run_quality_checks_empty_rows(self):
+        checks = [
+            {"type": "not_null", "columns": ["id"]},
+            {"type": "unique", "column": "id"},
+        ]
+        failures = run_quality_checks([], checks)
+        assert len(failures) == 0
