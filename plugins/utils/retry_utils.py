@@ -2,10 +2,11 @@
 retry_utils.py
 ==============
 Look up retry_policies for a given pipeline and error type.
-Computes exponential backoff delays and effective retry limits.
+Computes backoff delays with jitter and supports multiple strategies.
 """
 
 import logging
+import random
 from typing import Any, Dict, Optional
 
 from utils.db import get_pg_conn
@@ -47,17 +48,30 @@ def get_retry_policy(pipeline_id: str, error_type: str) -> Optional[Dict[str, An
 
 
 def compute_backoff_delay(retry_count: int, policy: Optional[Dict[str, Any]] = None,
-                          base_delay: int = 60, max_delay: int = 3600) -> int:
-    """Compute exponential backoff delay based on retry count.
+                          base_delay: int = 60, max_delay: int = 3600,
+                          apply_jitter: bool = True) -> int:
+    """Compute backoff delay based on retry count and strategy.
 
-    Default: 60s, 120s, 240s, 480s ... capped at max_delay.
+    Supports 'exponential' (default), 'linear', and 'fixed' strategies.
+    Applies full jitter to prevent thundering herd unless apply_jitter=False.
     """
     if policy:
         base_delay = policy.get("base_delay", base_delay)
         max_delay = policy.get("max_delay", max_delay)
 
-    delay = min(base_delay * (2 ** (retry_count - 1)), max_delay)
-    return delay
+    strategy = policy.get("strategy", "exponential") if policy else "exponential"
+
+    if strategy == "linear":
+        delay = min(base_delay * retry_count, max_delay)
+    elif strategy == "fixed":
+        delay = base_delay
+    else:
+        delay = min(base_delay * (2 ** (retry_count - 1)), max_delay)
+
+    if apply_jitter:
+        delay = random.uniform(0, delay)
+
+    return max(int(delay), 1)
 
 
 def get_effective_max_retries(pipeline_id: str, error_type: str,
