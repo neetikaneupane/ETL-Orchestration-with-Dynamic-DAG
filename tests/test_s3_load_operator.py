@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import MagicMock, patch
 
 from operators.s3_load_operator import S3LoadOperator

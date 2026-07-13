@@ -1,8 +1,5 @@
-import pytest
-from unittest.mock import MagicMock, patch
 from datetime import datetime
 
-from airflow import DAG
 from dags.factory.dag_factory import build_dag
 
 

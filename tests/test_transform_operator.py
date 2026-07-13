@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import MagicMock
 
 from operators.transform_operator import TransformOperator

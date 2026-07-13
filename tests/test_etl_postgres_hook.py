@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import MagicMock, patch
 
 from hooks.etl_postgres_hook import EtlPostgresHook

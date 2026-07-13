@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import MagicMock, patch
 
 from operators.postgres_extract_operator import PostgresExtractOperator
