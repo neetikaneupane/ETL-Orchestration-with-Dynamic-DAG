@@ -21,17 +21,17 @@ class PostgresExtractOperator(BaseOperator):
     def execute(self, context):
         self._source = get_source("postgres", self.source_config)
         started_at = time.time()
+        try:
+            rows, columns = self._source.extract(context)
 
-        rows, columns = self._source.extract(context)
+            duration = round(time.time() - started_at, 2)
+            log.info(f"Extracted {len(rows)} rows in {duration}s")
 
-        duration = round(time.time() - started_at, 2)
-        log.info(f"Extracted {len(rows)} rows in {duration}s")
+            context["ti"].xcom_push(key="extracted_rows", value=rows)
+            context["ti"].xcom_push(key="columns", value=columns)
+            context["ti"].xcom_push(key="row_count", value=len(rows))
+            context["ti"].xcom_push(key="duration_seconds", value=duration)
 
-        context["ti"].xcom_push(key="extracted_rows", value=rows)
-        context["ti"].xcom_push(key="columns", value=columns)
-        context["ti"].xcom_push(key="row_count", value=len(rows))
-        context["ti"].xcom_push(key="duration_seconds", value=duration)
-        context["ti"].xcom_push(key="source_config", value=self.source_config)
-
-        self._source.close()
-        return {"rows": len(rows), "duration": duration}
+            return {"rows": len(rows), "duration": duration}
+        finally:
+            self._source.close()
