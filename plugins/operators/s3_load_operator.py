@@ -26,14 +26,15 @@ class S3LoadOperator(BaseOperator):
 
         self._dest = get_destination("s3", self.dest_config)
         started_at = time.time()
+        try:
+            row_count = self._dest.load(rows, context)
 
-        row_count = self._dest.load(rows, context)
+            duration = round(time.time() - started_at, 2)
+            log.info(f"Loaded {row_count} rows in {duration}s")
 
-        duration = round(time.time() - started_at, 2)
-        log.info(f"Loaded {row_count} rows in {duration}s")
+            ti.xcom_push(key="load_duration", value=duration)
+            ti.xcom_push(key="rows_loaded", value=row_count)
 
-        ti.xcom_push(key="load_duration", value=duration)
-        ti.xcom_push(key="rows_loaded", value=row_count)
-
-        self._dest.close()
-        return {"rows_loaded": row_count, "duration": duration}
+            return {"rows_loaded": row_count, "duration": duration}
+        finally:
+            self._dest.close()
