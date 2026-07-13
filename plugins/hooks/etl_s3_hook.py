@@ -1,7 +1,7 @@
 import json
 import logging
 import io
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, List
 
 import boto3
 from botocore.exceptions import ClientError

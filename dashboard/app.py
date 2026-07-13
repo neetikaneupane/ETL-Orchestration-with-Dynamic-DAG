@@ -7,7 +7,6 @@ and run metadata in real-time.
 
 import os
 import sys
-from datetime import datetime, timedelta
 
 import pandas as pd
 import plotly.express as px

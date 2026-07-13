@@ -9,7 +9,7 @@ Deactivating a row (is_active=False) = DAG disappears.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.exceptions import AirflowNotFoundException
@@ -104,9 +104,9 @@ def build_dag(config: dict) -> DAG:
         "email_on_retry": False,
     }
 
-    source_type = config["source_type"]
+    config["source_type"]
     source_config = config["source_config"]
-    dest_type = config["dest_type"]
+    config["dest_type"]
     dest_config = config["dest_config"]
     transform_config = config["transform_config"]
 

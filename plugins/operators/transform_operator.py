@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from airflow.models import BaseOperator
 from utils.data_quality import run_quality_checks

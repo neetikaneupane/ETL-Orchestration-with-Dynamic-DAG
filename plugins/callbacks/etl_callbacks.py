@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 from utils.db import get_pg_conn
 from utils.retry_utils import get_retry_policy, compute_backoff_delay
-from utils.alerting import notify_pipeline_failure, notify_sla_breach
+from utils.alerting import notify_pipeline_failure
 
 log = logging.getLogger(__name__)
 

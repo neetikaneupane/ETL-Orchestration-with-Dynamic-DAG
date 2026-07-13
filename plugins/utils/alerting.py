@@ -5,12 +5,10 @@ Send alerts via Slack webhook or email when pipelines fail
 or SLA breaches are detected.
 """
 
-import json
 import logging
 from typing import Any, Dict, Optional
 
 import httpx
-from airflow.hooks.base import BaseHook
 
 log = logging.getLogger(__name__)
 
