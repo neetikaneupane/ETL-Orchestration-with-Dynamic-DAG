@@ -12,7 +12,12 @@ log = logging.getLogger(__name__)
 
 class DataQualityError(Exception):
     """Raised when a data quality check fails."""
-    pass
+
+    def __init__(self, message: str, failures: Optional[List[str]] = None,
+                 row_count: int = 0):
+        super().__init__(message)
+        self.failures = failures or []
+        self.row_count = row_count
 
 
 def check_not_null(rows: List[Dict[str, Any]], columns: List[str]) -> Tuple[int, List[str]]:

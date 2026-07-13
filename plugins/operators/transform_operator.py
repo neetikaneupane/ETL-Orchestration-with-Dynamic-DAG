@@ -3,7 +3,7 @@ import time
 from typing import Any, Dict, Optional
 
 from airflow.models import BaseOperator
-from utils.data_quality import run_quality_checks
+from utils.data_quality import run_quality_checks, DataQualityError
 
 log = logging.getLogger(__name__)
 
@@ -64,11 +64,18 @@ class TransformOperator(BaseOperator):
         transformed_columns = list(transformed[0].keys()) if transformed else columns
 
         quality_checks = self.transform_config.get("quality_checks", [])
+        failure_action = self.transform_config.get("quality_failure_action", "raise")
         if quality_checks and transformed:
             failures = run_quality_checks(transformed, quality_checks)
             ti.xcom_push(key="quality_failures", value=failures)
             if failures:
-                log.warning(f"Quality failures: {failures}")
+                if failure_action == "raise":
+                    raise DataQualityError(
+                        f"{len(failures)} quality check(s) failed",
+                        failures=failures,
+                        row_count=len(transformed),
+                    )
+                log.warning(f"Quality failures (non-blocking): {failures}")
 
         ti.xcom_push(key="transformed_rows", value=transformed)
         ti.xcom_push(key="transform_duration", value=duration)
