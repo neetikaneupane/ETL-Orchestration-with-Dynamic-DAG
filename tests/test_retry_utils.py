@@ -5,28 +5,58 @@ class TestRetryUtils:
     def test_compute_backoff_delay_default(self):
         from utils.retry_utils import compute_backoff_delay
 
-        assert compute_backoff_delay(1) == 60
-        assert compute_backoff_delay(2) == 120
-        assert compute_backoff_delay(3) == 240
-        assert compute_backoff_delay(4) == 480
+        assert compute_backoff_delay(1, apply_jitter=False) == 60
+        assert compute_backoff_delay(2, apply_jitter=False) == 120
+        assert compute_backoff_delay(3, apply_jitter=False) == 240
+        assert compute_backoff_delay(4, apply_jitter=False) == 480
 
     def test_compute_backoff_delay_with_policy(self):
         from utils.retry_utils import compute_backoff_delay
 
         policy = {"base_delay": 30, "max_delay": 600}
-        assert compute_backoff_delay(1, policy) == 30
-        assert compute_backoff_delay(2, policy) == 60
-        assert compute_backoff_delay(3, policy) == 120
+        assert compute_backoff_delay(1, policy, apply_jitter=False) == 30
+        assert compute_backoff_delay(2, policy, apply_jitter=False) == 60
+        assert compute_backoff_delay(3, policy, apply_jitter=False) == 120
 
     def test_compute_backoff_delay_capped(self):
         from utils.retry_utils import compute_backoff_delay
 
-        assert compute_backoff_delay(20) == 3600
+        assert compute_backoff_delay(20, apply_jitter=False) == 3600
 
     def test_compute_backoff_delay_custom_caps(self):
         from utils.retry_utils import compute_backoff_delay
 
-        assert compute_backoff_delay(10, base_delay=60, max_delay=500) == 500
+        assert compute_backoff_delay(10, base_delay=60, max_delay=500, apply_jitter=False) == 500
+
+    def test_compute_backoff_delay_linear_strategy(self):
+        from utils.retry_utils import compute_backoff_delay
+
+        policy = {"strategy": "linear", "base_delay": 30, "max_delay": 600}
+        assert compute_backoff_delay(1, policy, apply_jitter=False) == 30
+        assert compute_backoff_delay(2, policy, apply_jitter=False) == 60
+        assert compute_backoff_delay(3, policy, apply_jitter=False) == 90
+        assert compute_backoff_delay(20, policy, apply_jitter=False) == 600
+
+    def test_compute_backoff_delay_fixed_strategy(self):
+        from utils.retry_utils import compute_backoff_delay
+
+        policy = {"strategy": "fixed", "base_delay": 45, "max_delay": 600}
+        assert compute_backoff_delay(1, policy, apply_jitter=False) == 45
+        assert compute_backoff_delay(5, policy, apply_jitter=False) == 45
+        assert compute_backoff_delay(20, policy, apply_jitter=False) == 45
+
+    def test_compute_backoff_delay_jitter_range(self):
+        from utils.retry_utils import compute_backoff_delay
+
+        results = [compute_backoff_delay(3, apply_jitter=True) for _ in range(100)]
+        assert all(0 <= d <= 240 for d in results)
+        assert len(set(results)) > 1
+
+    def test_compute_backoff_delay_never_zero(self):
+        from utils.retry_utils import compute_backoff_delay
+
+        for _ in range(100):
+            assert compute_backoff_delay(1, base_delay=0, apply_jitter=True) >= 1
 
     @patch("utils.retry_utils.get_pg_conn")
     def test_get_retry_policy_found(self, mock_get_conn):

@@ -1,6 +1,9 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from operators.transform_operator import TransformOperator
+from utils.data_quality import DataQualityError
 
 
 class TestTransformOperator:
@@ -159,3 +162,68 @@ class TestTransformOperator:
         result = op.execute(context)
 
         assert result["rows_after"] == 1
+
+    def test_execute_quality_failure_raises_by_default(self):
+        rows_input = [{"id": 1, "name": None}, {"id": 2, "name": "test"}]
+        context = {
+            "ti": MagicMock(),
+        }
+        context["ti"].xcom_pull.side_effect = lambda task_ids, key: {
+            ("extract", "extracted_rows"): rows_input,
+            ("extract", "columns"): ["id", "name"],
+        }.get((task_ids, key), [])
+
+        op = TransformOperator(
+            task_id="transform",
+            transform_config={
+                "quality_checks": [{"type": "not_null", "columns": ["name"]}],
+            },
+        )
+
+        with pytest.raises(DataQualityError) as exc_info:
+            op.execute(context)
+
+        assert "1 quality check(s) failed" in str(exc_info.value)
+        assert len(exc_info.value.failures) > 0
+        assert exc_info.value.row_count == 2
+
+    def test_execute_quality_failure_warn_mode(self):
+        rows_input = [{"id": 1, "name": None}]
+        context = {
+            "ti": MagicMock(),
+        }
+        context["ti"].xcom_pull.side_effect = lambda task_ids, key: {
+            ("extract", "extracted_rows"): rows_input,
+            ("extract", "columns"): ["id", "name"],
+        }.get((task_ids, key), [])
+
+        op = TransformOperator(
+            task_id="transform",
+            transform_config={
+                "quality_checks": [{"type": "not_null", "columns": ["name"]}],
+                "quality_failure_action": "warn",
+            },
+        )
+        result = op.execute(context)
+
+        assert result["rows_after"] == 1
+
+    def test_execute_quality_pass(self):
+        rows_input = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        context = {
+            "ti": MagicMock(),
+        }
+        context["ti"].xcom_pull.side_effect = lambda task_ids, key: {
+            ("extract", "extracted_rows"): rows_input,
+            ("extract", "columns"): ["id", "name"],
+        }.get((task_ids, key), [])
+
+        op = TransformOperator(
+            task_id="transform",
+            transform_config={
+                "quality_checks": [{"type": "not_null", "columns": ["name"]}],
+            },
+        )
+        result = op.execute(context)
+
+        assert result["rows_after"] == 2
