@@ -16,7 +16,9 @@ from airflow.exceptions import AirflowNotFoundException
 from airflow.hooks.base import BaseHook
 
 from operators import (
-    PostgresExtractOperator, TransformOperator, S3LoadOperator,
+    PostgresExtractOperator,
+    TransformOperator,
+    S3LoadOperator,
 )
 from callbacks import on_success_callback, on_failure_callback, on_retry_callback
 from utils.retry_utils import get_retry_policy, compute_backoff_delay
@@ -30,6 +32,7 @@ log = logging.getLogger(__name__)
 # file before Postgres might be ready. If the fetch fails, we return an empty
 # list — no DAGs are created, but Airflow doesn't crash.
 # =============================================================================
+
 
 def fetch_pipeline_configs():
     """
@@ -65,6 +68,7 @@ def fetch_pipeline_configs():
                     dest_type,
                     dest_config,
                     transform_config,
+                    dlq_config,
                     sla_minutes,
                     default_retries,
                     default_retry_delay_seconds,
@@ -80,7 +84,11 @@ def fetch_pipeline_configs():
         log.info(f"DAG factory fetched {len(rows)} active pipelines.")
         return [dict(row) for row in rows]
 
-    except (psycopg2.OperationalError, psycopg2.InterfaceError, AirflowNotFoundException) as e:
+    except (
+        psycopg2.OperationalError,
+        psycopg2.InterfaceError,
+        AirflowNotFoundException,
+    ) as e:
         log.error(f"DAG factory failed to fetch configs: {e}")
         return []
 
@@ -89,9 +97,10 @@ def fetch_pipeline_configs():
 # STEP 2: Build one DAG from one config row
 # =============================================================================
 
+
 def build_dag(config: dict) -> DAG:
     """
-    Takes one row from pipeline_definitions and returns a fully 
+    Takes one row from pipeline_definitions and returns a fully
     configured Airflow DAG object.
     """
 
@@ -109,6 +118,7 @@ def build_dag(config: dict) -> DAG:
     config["dest_type"]
     dest_config = config["dest_config"]
     transform_config = config["transform_config"]
+    dlq_config = config.get("dlq_config") or {}
 
     default_args.setdefault("on_success_callback", on_success_callback)
     default_args.setdefault("on_failure_callback", on_failure_callback)
@@ -129,8 +139,16 @@ def build_dag(config: dict) -> DAG:
 
     with dag:
         extract_policy = get_retry_policy(pipeline_id, "OperationalError")
-        extract_retries = extract_policy["max_retries"] if extract_policy else config["default_retries"]
-        extract_delay = compute_backoff_delay(1, extract_policy) if extract_policy else config["default_retry_delay_seconds"]
+        extract_retries = (
+            extract_policy["max_retries"]
+            if extract_policy
+            else config["default_retries"]
+        )
+        extract_delay = (
+            compute_backoff_delay(1, extract_policy)
+            if extract_policy
+            else config["default_retry_delay_seconds"]
+        )
 
         t_extract = PostgresExtractOperator(
             task_id="extract",
@@ -140,19 +158,35 @@ def build_dag(config: dict) -> DAG:
         )
 
         transform_policy = get_retry_policy(pipeline_id, "ValueError")
-        transform_retries = transform_policy["max_retries"] if transform_policy else config["default_retries"]
-        transform_delay = compute_backoff_delay(1, transform_policy) if transform_policy else config["default_retry_delay_seconds"]
+        transform_retries = (
+            transform_policy["max_retries"]
+            if transform_policy
+            else config["default_retries"]
+        )
+        transform_delay = (
+            compute_backoff_delay(1, transform_policy)
+            if transform_policy
+            else config["default_retry_delay_seconds"]
+        )
 
         t_transform = TransformOperator(
             task_id="transform",
             transform_config=transform_config,
+            dlq_config=dlq_config,
+            pipeline_id=pipeline_id,
             retries=transform_retries,
             retry_delay=timedelta(seconds=transform_delay),
         )
 
         load_policy = get_retry_policy(pipeline_id, "ClientError")
-        load_retries = load_policy["max_retries"] if load_policy else config["default_retries"]
-        load_delay = compute_backoff_delay(1, load_policy) if load_policy else config["default_retry_delay_seconds"]
+        load_retries = (
+            load_policy["max_retries"] if load_policy else config["default_retries"]
+        )
+        load_delay = (
+            compute_backoff_delay(1, load_policy)
+            if load_policy
+            else config["default_retry_delay_seconds"]
+        )
 
         t_load = S3LoadOperator(
             task_id="load",

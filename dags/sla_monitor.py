@@ -11,7 +11,11 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from utils.alerting import notify_sla_breach, notify_consecutive_failures
+from utils.alerting import (
+    notify_sla_breach,
+    notify_consecutive_failures,
+    notify_pipeline_failure,
+)
 from utils.db import get_pg_conn
 
 log = logging.getLogger(__name__)
@@ -59,11 +63,14 @@ def check_sla_breaches(**context):
             for row in breaches:
                 pipeline_id, execution_date, duration_sec, sla_minutes = row
                 breach_minutes = round((duration_sec / 60) - sla_minutes, 2)
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO pipeline_config.sla_breach_log
                         (pipeline_id, dag_run_id, execution_date, breach_minutes)
                     VALUES (%s, NULL, %s, %s)
-                """, (pipeline_id, execution_date, breach_minutes))
+                """,
+                    (pipeline_id, execution_date, breach_minutes),
+                )
                 notify_sla_breach(pipeline_id, breach_minutes)
                 log.warning(
                     f"SLA breach: {pipeline_id} exceeded {sla_minutes}m by {breach_minutes}m"
@@ -137,6 +144,37 @@ def alert_on_consecutive_failures(**context):
         conn.close()
 
 
+def check_dlq_volume(**context):
+    conn = get_pg_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT pipeline_id,
+                       SUM(row_count) AS total_rows,
+                       COUNT(*) AS entry_count
+                FROM pipeline_config.dead_letter_queue
+                WHERE created_at >= NOW() - INTERVAL '24 hours'
+                GROUP BY pipeline_id
+                HAVING SUM(row_count) > 0
+                ORDER BY total_rows DESC
+            """)
+            dlq_entries = cur.fetchall()
+            for pipeline_id, total_rows, entry_count in dlq_entries:
+                log.warning(
+                    f"DLQ: {pipeline_id} has {total_rows} failed rows "
+                    f"in {entry_count} entries in last 24h"
+                )
+                notify_pipeline_failure(
+                    pipeline_id,
+                    "transform",
+                    f"DLQ Alert: {total_rows} rows routed to dead letter queue "
+                    f"({entry_count} entries in last 24h)",
+                )
+        return len(dlq_entries)
+    finally:
+        conn.close()
+
+
 with dag:
     t1 = PythonOperator(
         task_id="check_sla_breaches",
@@ -153,4 +191,9 @@ with dag:
         python_callable=alert_on_consecutive_failures,
     )
 
-    t1 >> t2 >> t3
+    t4 = PythonOperator(
+        task_id="check_dlq_volume",
+        python_callable=check_dlq_volume,
+    )
+
+    t1 >> t2 >> t3 >> t4
