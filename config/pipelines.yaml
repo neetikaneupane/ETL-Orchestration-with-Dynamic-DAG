@@ -15,6 +15,11 @@ pipelines:
       conn_id: minio_s3
       bucket: processed-data
       prefix: orders/daily/
+    dlq_config:
+      enabled: true
+      bucket: dlq-data
+      prefix: dlq/
+      conn_id: minio_s3
     sla_minutes: 60
     default_retries: 3
     default_retry_delay_seconds: 300
