@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS pipeline_config.pipeline_definitions (
     dest_type           VARCHAR(50) NOT NULL,
     dest_config         JSONB NOT NULL DEFAULT '{}',
     transform_config    JSONB NOT NULL DEFAULT '{}',
+    dlq_config          JSONB NOT NULL DEFAULT '{}',
     sla_minutes         INTEGER DEFAULT 60,
     default_retries     INTEGER NOT NULL DEFAULT 3,
     default_retry_delay_seconds INTEGER NOT NULL DEFAULT 300,
@@ -90,6 +91,23 @@ CREATE TABLE IF NOT EXISTS pipeline_config.watermarks (
     watermark_value     TIMESTAMP NOT NULL,
     updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS pipeline_config.dead_letter_queue (
+    id              BIGSERIAL PRIMARY KEY,
+    pipeline_id     VARCHAR(100) NOT NULL,
+    execution_date  TIMESTAMP NOT NULL,
+    dag_run_id      VARCHAR(255),
+    task_id         VARCHAR(255) NOT NULL DEFAULT 'transform',
+    failure_type    VARCHAR(100) NOT NULL,
+    failure_message TEXT,
+    row_count       INTEGER NOT NULL DEFAULT 0,
+    s3_key          TEXT,
+    s3_bucket       VARCHAR(255),
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_dlq_pipeline_date
+    ON pipeline_config.dead_letter_queue (pipeline_id, execution_date);
 
 -- Sample orders table (real source data for the demo pipeline)
 CREATE TABLE IF NOT EXISTS pipeline_config.sample_orders (
