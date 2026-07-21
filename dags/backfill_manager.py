@@ -92,7 +92,9 @@ def process_backfill_requests(**context):
                     execution_date=logical_date,
                 )
                 if existing:
-                    log.info(f"Run already exists for {dag_id} on {exec_date}, skipping")
+                    log.info(
+                        f"Run already exists for {dag_id} on {exec_date}, skipping"
+                    )
                     triggered += 1
                     continue
 
