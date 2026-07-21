@@ -32,15 +32,25 @@ def _log_metadata(context: Dict[str, Any], status: str):
         conn = get_pg_conn()
         try:
             with conn.cursor() as cur:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO pipeline_config.task_run_metadata
                         (pipeline_id, dag_run_id, task_id, execution_date,
                          rows_processed, duration_seconds, status, error_type, retry_count)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    dag_id, run_id, task_id, execution_date,
-                    rows, duration, status, error_type, retry_count,
-                ))
+                """,
+                    (
+                        dag_id,
+                        run_id,
+                        task_id,
+                        execution_date,
+                        rows,
+                        duration,
+                        status,
+                        error_type,
+                        retry_count,
+                    ),
+                )
                 conn.commit()
         finally:
             conn.close()
@@ -89,16 +99,19 @@ def sla_miss_callback(dag, task_list, blocking_task_list, slas, blocking_tis):
         try:
             with conn.cursor() as cur:
                 for sla in slas:
-                    cur.execute("""
+                    cur.execute(
+                        """
                         INSERT INTO pipeline_config.sla_breach_log
                             (pipeline_id, dag_run_id, execution_date, breach_minutes)
                         VALUES (%s, %s, %s, %s)
-                    """, (
-                        sla.dag_id,
-                        sla.dag_run.run_id if sla.dag_run else None,
-                        sla.execution_date,
-                        sla.duration.total_seconds() / 60 if sla.duration else None,
-                    ))
+                    """,
+                        (
+                            sla.dag_id,
+                            sla.dag_run.run_id if sla.dag_run else None,
+                            sla.execution_date,
+                            sla.duration.total_seconds() / 60 if sla.duration else None,
+                        ),
+                    )
                 conn.commit()
         finally:
             conn.close()
