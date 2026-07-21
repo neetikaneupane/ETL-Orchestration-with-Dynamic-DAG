@@ -13,14 +13,17 @@ log = logging.getLogger(__name__)
 class DataQualityError(Exception):
     """Raised when a data quality check fails."""
 
-    def __init__(self, message: str, failures: Optional[List[str]] = None,
-                 row_count: int = 0):
+    def __init__(
+        self, message: str, failures: Optional[List[str]] = None, row_count: int = 0
+    ):
         super().__init__(message)
         self.failures = failures or []
         self.row_count = row_count
 
 
-def check_not_null(rows: List[Dict[str, Any]], columns: List[str]) -> Tuple[int, List[str]]:
+def check_not_null(
+    rows: List[Dict[str, Any]], columns: List[str]
+) -> Tuple[int, List[str]]:
     """Check that specified columns have no null values.
 
     Returns (failed_rows_count, list of column names with nulls).
@@ -73,9 +76,7 @@ def check_range(
             outliers.append(val)
 
     if outliers:
-        log.warning(
-            f"Found {len(outliers)} out-of-range values in column '{column}'"
-        )
+        log.warning(f"Found {len(outliers)} out-of-range values in column '{column}'")
     return len(outliers), outliers
 
 
@@ -100,15 +101,11 @@ def run_quality_checks(
             if ctype == "not_null":
                 count, cols = check_not_null(rows, check.get("columns", []))
                 if count:
-                    failures.append(
-                        f"not_null: {count} columns with nulls: {cols}"
-                    )
+                    failures.append(f"not_null: {count} columns with nulls: {cols}")
             elif ctype == "unique":
                 total, dups = check_unique(rows, check.get("column", ""))
                 if dups:
-                    failures.append(
-                        f"unique: {dups} duplicates in '{check['column']}'"
-                    )
+                    failures.append(f"unique: {dups} duplicates in '{check['column']}'")
             elif ctype == "range":
                 count, vals = check_range(
                     rows, check["column"], check.get("min"), check.get("max")

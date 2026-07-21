@@ -17,6 +17,7 @@ def _get_alert_config() -> Dict[str, Any]:
     """Read alert configuration from Airflow variables or defaults."""
     try:
         from airflow.models import Variable
+
         return Variable.get("alert_config", deserialize_json=True) or {}
     except (ValueError, KeyError):
         return {}

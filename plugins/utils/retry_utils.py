@@ -23,12 +23,15 @@ def get_retry_policy(pipeline_id: str, error_type: str) -> Optional[Dict[str, An
         conn = get_pg_conn()
         try:
             with conn.cursor() as cur:
-                cur.execute("""
+                cur.execute(
+                    """
                     SELECT retry_strategy, max_retries, base_delay_seconds,
                            max_delay_seconds, alert_on_failure
                     FROM pipeline_config.retry_policies
                     WHERE pipeline_id = %s AND error_type = %s
-                """, (pipeline_id, error_type))
+                """,
+                    (pipeline_id, error_type),
+                )
                 row = cur.fetchone()
 
             if row:
@@ -47,9 +50,13 @@ def get_retry_policy(pipeline_id: str, error_type: str) -> Optional[Dict[str, An
         return None
 
 
-def compute_backoff_delay(retry_count: int, policy: Optional[Dict[str, Any]] = None,
-                          base_delay: int = 60, max_delay: int = 3600,
-                          apply_jitter: bool = True) -> int:
+def compute_backoff_delay(
+    retry_count: int,
+    policy: Optional[Dict[str, Any]] = None,
+    base_delay: int = 60,
+    max_delay: int = 3600,
+    apply_jitter: bool = True,
+) -> int:
     """Compute backoff delay based on retry count and strategy.
 
     Supports 'exponential' (default), 'linear', and 'fixed' strategies.
@@ -74,8 +81,9 @@ def compute_backoff_delay(retry_count: int, policy: Optional[Dict[str, Any]] = N
     return max(int(delay), 1)
 
 
-def get_effective_max_retries(pipeline_id: str, error_type: str,
-                              default_retries: int = 3) -> int:
+def get_effective_max_retries(
+    pipeline_id: str, error_type: str, default_retries: int = 3
+) -> int:
     """Get the max retries for a pipeline + error type, falling back to default."""
     policy = get_retry_policy(pipeline_id, error_type)
     if policy:
