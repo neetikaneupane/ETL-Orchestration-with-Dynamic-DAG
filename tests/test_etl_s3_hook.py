@@ -20,7 +20,9 @@ class TestEtlS3Hook:
             mock_client = MagicMock()
             mock_boto.return_value = mock_client
             error_response = {"Error": {"Code": "404", "Message": "Not Found"}}
-            mock_client.head_bucket.side_effect = ClientError(error_response, "HeadBucket")
+            mock_client.head_bucket.side_effect = ClientError(
+                error_response, "HeadBucket"
+            )
 
             rows = [{"id": 1, "name": "test"}]
             count = hook.load_data(rows, "test-bucket", "test/key.jsonl")

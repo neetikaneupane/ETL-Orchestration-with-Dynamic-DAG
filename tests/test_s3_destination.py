@@ -10,11 +10,13 @@ class TestS3Destination:
         mock_hook_class.return_value = mock_hook
         mock_hook.load_data.return_value = 2
 
-        dest = S3Destination({
-            "conn_id": "test_s3",
-            "bucket": "test-bucket",
-            "prefix": "test/",
-        })
+        dest = S3Destination(
+            {
+                "conn_id": "test_s3",
+                "bucket": "test-bucket",
+                "prefix": "test/",
+            }
+        )
 
         rows = [{"id": 1}, {"id": 2}]
         count = dest.load(rows, {"ds": "2024-01-01"})
@@ -24,11 +26,13 @@ class TestS3Destination:
 
     @patch("destinations.s3_destination.EtlS3Hook")
     def test_load_no_rows(self, mock_hook_class):
-        dest = S3Destination({
-            "conn_id": "test_s3",
-            "bucket": "test-bucket",
-            "prefix": "test/",
-        })
+        dest = S3Destination(
+            {
+                "conn_id": "test_s3",
+                "bucket": "test-bucket",
+                "prefix": "test/",
+            }
+        )
 
         count = dest.load([])
         assert count == 0
@@ -39,11 +43,13 @@ class TestS3Destination:
         mock_hook_class.return_value = mock_hook
         mock_hook.load_data.return_value = 1
 
-        dest = S3Destination({
-            "conn_id": "test_s3",
-            "bucket": "test-bucket",
-            "prefix": "test/",
-        })
+        dest = S3Destination(
+            {
+                "conn_id": "test_s3",
+                "bucket": "test-bucket",
+                "prefix": "test/",
+            }
+        )
 
         rows = [{"id": 1}]
         count = dest.load(rows, {})
@@ -56,11 +62,13 @@ class TestS3Destination:
         mock_hook = MagicMock()
         mock_hook_class.return_value = mock_hook
 
-        dest = S3Destination({
-            "conn_id": "test_s3",
-            "bucket": "test-bucket",
-            "prefix": "test/",
-        })
+        dest = S3Destination(
+            {
+                "conn_id": "test_s3",
+                "bucket": "test-bucket",
+                "prefix": "test/",
+            }
+        )
         dest._hook = mock_hook
         dest.close()
 
@@ -68,9 +76,11 @@ class TestS3Destination:
 
     @patch("destinations.s3_destination.EtlS3Hook")
     def test_close_noop(self, mock_hook_class):
-        dest = S3Destination({
-            "conn_id": "test_s3",
-            "bucket": "test-bucket",
-            "prefix": "test/",
-        })
+        dest = S3Destination(
+            {
+                "conn_id": "test_s3",
+                "bucket": "test-bucket",
+                "prefix": "test/",
+            }
+        )
         dest.close()

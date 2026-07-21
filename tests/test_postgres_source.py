@@ -17,11 +17,13 @@ class TestPostgresSource:
         mock_cursor.description = [("id",), ("name",)]
         mock_cursor.fetchall.return_value = [(1, "test")]
 
-        source = PostgresSource({
-            "conn_id": "test_conn",
-            "schema": "public",
-            "table": "test_table",
-        })
+        source = PostgresSource(
+            {
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+            }
+        )
 
         rows, columns = source.extract()
 
@@ -47,13 +49,15 @@ class TestPostgresSource:
             (2, datetime(2024, 6, 1, 11, 0, 0)),
         ]
 
-        source = PostgresSource({
-            "conn_id": "test_conn",
-            "schema": "public",
-            "table": "test_table",
-            "incremental_column": "updated_at",
-            "watermark_table": "pipeline_config.watermarks",
-        })
+        source = PostgresSource(
+            {
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+                "incremental_column": "updated_at",
+                "watermark_table": "pipeline_config.watermarks",
+            }
+        )
 
         rows, columns = source.extract()
 
@@ -68,11 +72,13 @@ class TestPostgresSource:
         mock_hook = MagicMock()
         mock_hook_class.return_value = mock_hook
 
-        source = PostgresSource({
-            "conn_id": "test_conn",
-            "schema": "public",
-            "table": "test_table",
-        })
+        source = PostgresSource(
+            {
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+            }
+        )
         source._hook = mock_hook
         source.close()
 
@@ -80,11 +86,13 @@ class TestPostgresSource:
 
     @patch("sources.postgres_source.EtlPostgresHook")
     def test_close_noop(self, mock_hook_class):
-        source = PostgresSource({
-            "conn_id": "test_conn",
-            "schema": "public",
-            "table": "test_table",
-        })
+        source = PostgresSource(
+            {
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+            }
+        )
         source.close()
 
     @patch("sources.postgres_source.EtlPostgresHook")
@@ -93,11 +101,13 @@ class TestPostgresSource:
         mock_hook_class.return_value = mock_hook
         mock_hook.get_row_count.return_value = 42
 
-        source = PostgresSource({
-            "conn_id": "test_conn",
-            "schema": "public",
-            "table": "test_table",
-        })
+        source = PostgresSource(
+            {
+                "conn_id": "test_conn",
+                "schema": "public",
+                "table": "test_table",
+            }
+        )
 
         count = source.get_row_count()
         assert count == 42

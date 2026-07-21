@@ -12,6 +12,7 @@ class TestBackfillManager:
         mock_cursor.fetchall.return_value = []
 
         from dags.backfill_manager import process_backfill_requests
+
         result = process_backfill_requests(**{})
 
         assert result == 0
@@ -19,7 +20,9 @@ class TestBackfillManager:
     @patch("dags.backfill_manager.DagRun")
     @patch("dags.backfill_manager.DagBag")
     @patch("dags.backfill_manager.get_pg_conn")
-    def test_process_backfill_requests(self, mock_get_conn, mock_dag_bag_cls, mock_dag_run):
+    def test_process_backfill_requests(
+        self, mock_get_conn, mock_dag_bag_cls, mock_dag_run
+    ):
         mock_conn = MagicMock()
         mock_get_conn.return_value = mock_conn
 
@@ -41,6 +44,7 @@ class TestBackfillManager:
         mock_dag_run.find.return_value = []
 
         from dags.backfill_manager import process_backfill_requests
+
         result = process_backfill_requests(**{})
 
         assert result == 2
@@ -53,7 +57,12 @@ class TestBackfillManager:
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_cursor.fetchall.return_value = [
-            (1, "missing_pipeline", datetime(2024, 1, 1).date(), datetime(2024, 1, 1).date())
+            (
+                1,
+                "missing_pipeline",
+                datetime(2024, 1, 1).date(),
+                datetime(2024, 1, 1).date(),
+            )
         ]
 
         mock_dag_bag = MagicMock()
@@ -62,6 +71,7 @@ class TestBackfillManager:
             mock_dag_bag.dags = {}
 
             from dags.backfill_manager import process_backfill_requests
+
             result = process_backfill_requests(**{})
 
         assert result == 0

@@ -1,5 +1,8 @@
 from utils.data_quality import (
-    check_not_null, check_unique, check_range, run_quality_checks,
+    check_not_null,
+    check_unique,
+    check_range,
+    run_quality_checks,
 )
 
 

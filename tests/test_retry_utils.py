@@ -26,7 +26,10 @@ class TestRetryUtils:
     def test_compute_backoff_delay_custom_caps(self):
         from utils.retry_utils import compute_backoff_delay
 
-        assert compute_backoff_delay(10, base_delay=60, max_delay=500, apply_jitter=False) == 500
+        assert (
+            compute_backoff_delay(10, base_delay=60, max_delay=500, apply_jitter=False)
+            == 500
+        )
 
     def test_compute_backoff_delay_linear_strategy(self):
         from utils.retry_utils import compute_backoff_delay
@@ -64,11 +67,10 @@ class TestRetryUtils:
         mock_get_conn.return_value = mock_conn
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
-        mock_cursor.fetchone.return_value = (
-            "exponential", 5, 60, 3600, True
-        )
+        mock_cursor.fetchone.return_value = ("exponential", 5, 60, 3600, True)
 
         from utils.retry_utils import get_retry_policy
+
         result = get_retry_policy("pipeline_1", "OperationalError")
 
         assert result is not None
@@ -85,6 +87,7 @@ class TestRetryUtils:
         mock_cursor.fetchone.return_value = None
 
         from utils.retry_utils import get_retry_policy
+
         result = get_retry_policy("pipeline_1", "UnknownError")
 
         assert result is None
@@ -94,6 +97,7 @@ class TestRetryUtils:
         mock_get_conn.side_effect = Exception("Connection failed")
 
         from utils.retry_utils import get_retry_policy
+
         result = get_retry_policy("pipeline_1", "OperationalError")
 
         assert result is None
@@ -103,6 +107,7 @@ class TestRetryUtils:
         mock_policy.return_value = {"max_retries": 7}
 
         from utils.retry_utils import get_effective_max_retries
+
         result = get_effective_max_retries("pipeline_1", "OperationalError")
 
         assert result == 7
@@ -112,6 +117,7 @@ class TestRetryUtils:
         mock_policy.return_value = None
 
         from utils.retry_utils import get_effective_max_retries
+
         result = get_effective_max_retries("pipeline_1", "OperationalError")
 
         assert result == 3
@@ -121,6 +127,9 @@ class TestRetryUtils:
         mock_policy.return_value = None
 
         from utils.retry_utils import get_effective_max_retries
-        result = get_effective_max_retries("pipeline_1", "OperationalError", default_retries=5)
+
+        result = get_effective_max_retries(
+            "pipeline_1", "OperationalError", default_retries=5
+        )
 
         assert result == 5

@@ -22,6 +22,7 @@ class TestEtlCallbacks:
         context["dag_run"].run_id = "run_1"
 
         from callbacks.etl_callbacks import _log_metadata
+
         _log_metadata(context, "success")
 
         mock_cursor.execute.assert_called_once()
@@ -38,6 +39,7 @@ class TestEtlCallbacks:
             context["ti"].task_id = "extract"
 
             from callbacks.etl_callbacks import on_success_callback
+
             on_success_callback(context)
 
             mock_log.assert_called_once_with(context, "success")
@@ -60,6 +62,7 @@ class TestEtlCallbacks:
             context["dag_run"].run_id = "run_1"
 
             from callbacks.etl_callbacks import on_failure_callback
+
             on_failure_callback(context)
 
             mock_notify.assert_called_once()
@@ -82,6 +85,7 @@ class TestEtlCallbacks:
             context["dag_run"].run_id = "run_1"
 
             from callbacks.etl_callbacks import on_failure_callback
+
             on_failure_callback(context)
 
             mock_notify.assert_not_called()
@@ -105,6 +109,7 @@ class TestEtlCallbacks:
             context["dag"].dag_id = "test_pipeline"
 
             from callbacks.etl_callbacks import on_retry_callback
+
             on_retry_callback(context)
 
             mock_backoff.assert_called_once()
@@ -126,6 +131,7 @@ class TestEtlCallbacks:
         mock_sla.duration.total_seconds.return_value = 5400.0
 
         from callbacks.etl_callbacks import sla_miss_callback
+
         sla_miss_callback(mock_dag, [], [], [mock_sla], [])
 
         mock_cursor.execute.assert_called_once()

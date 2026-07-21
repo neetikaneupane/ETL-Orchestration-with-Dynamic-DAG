@@ -11,6 +11,7 @@ class TestSlaMonitor:
         mock_cursor.fetchall.return_value = []
 
         from dags.sla_monitor import check_sla_breaches
+
         result = check_sla_breaches(**{})
 
         assert result == 0
@@ -27,6 +28,7 @@ class TestSlaMonitor:
         ]
 
         from dags.sla_monitor import check_sla_breaches
+
         result = check_sla_breaches(**{})
 
         assert result == 1
@@ -40,6 +42,7 @@ class TestSlaMonitor:
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
 
         from dags.sla_monitor import update_health_summary
+
         update_health_summary(**{})
 
         mock_cursor.execute.assert_called_once()
@@ -55,6 +58,7 @@ class TestSlaMonitor:
         mock_cursor.fetchall.return_value = []
 
         from dags.sla_monitor import alert_on_consecutive_failures
+
         result = alert_on_consecutive_failures(**{})
 
         assert result == 0
@@ -72,6 +76,7 @@ class TestSlaMonitor:
         ]
 
         from dags.sla_monitor import alert_on_consecutive_failures
+
         result = alert_on_consecutive_failures(**{})
 
         assert result == 1
