@@ -29,7 +29,11 @@ class S3Destination(BaseDestination):
             log.info("No rows to load.")
             return 0
 
-        ds = context.get("ds", datetime.now().strftime("%Y-%m-%d")) if context else datetime.now().strftime("%Y-%m-%d")
+        ds = (
+            context.get("ds", datetime.now().strftime("%Y-%m-%d"))
+            if context
+            else datetime.now().strftime("%Y-%m-%d")
+        )
         key_prefix = f"{self.prefix}{ds}/data"
 
         row_count = 0
