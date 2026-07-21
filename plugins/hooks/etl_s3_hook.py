@@ -26,7 +26,8 @@ class EtlS3Hook(BaseHook):
                 "s3",
                 endpoint_url=endpoint_url,
                 aws_access_key_id=conn_details.login or extras.get("aws_access_key_id"),
-                aws_secret_access_key=conn_details.password or extras.get("aws_secret_access_key"),
+                aws_secret_access_key=conn_details.password
+                or extras.get("aws_secret_access_key"),
                 region_name=extras.get("region_name", "us-east-1"),
             )
         return self._client
