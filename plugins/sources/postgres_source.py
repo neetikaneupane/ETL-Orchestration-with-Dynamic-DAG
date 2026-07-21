@@ -28,7 +28,9 @@ class PostgresSource(BaseSource):
         self.schema = config.get("schema", "public")
         self.table = config["table"]
         self.incremental_column = config.get("incremental_column")
-        self.watermark_table = config.get("watermark_table", "pipeline_config.watermarks")
+        self.watermark_table = config.get(
+            "watermark_table", "pipeline_config.watermarks"
+        )
         self.num_parallel_chunks = config.get("num_parallel_chunks", 1)
         self._hook: Optional[EtlPostgresHook] = None
 
@@ -44,10 +46,13 @@ class PostgresSource(BaseSource):
             return None
         conn = self.hook.get_conn()
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT watermark_value FROM pipeline_config.watermarks
                 WHERE source_table = %s
-            """, (f"{self.schema}.{self.table}",))
+            """,
+                (f"{self.schema}.{self.table}",),
+            )
             row = cur.fetchone()
         return row[0] if row else None
 
@@ -57,13 +62,16 @@ class PostgresSource(BaseSource):
             return
         conn = self.hook.get_conn()
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO pipeline_config.watermarks (source_table, watermark_value)
                 VALUES (%s, %s)
                 ON CONFLICT (source_table)
                 DO UPDATE SET watermark_value = EXCLUDED.watermark_value,
                               updated_at = NOW()
-            """, (f"{self.schema}.{self.table}", value))
+            """,
+                (f"{self.schema}.{self.table}", value),
+            )
             conn.commit()
 
     def _build_query(self) -> Tuple[sql.Composed, List[Any]]:
@@ -87,8 +95,9 @@ class PostgresSource(BaseSource):
 
         return base, params
 
-    def _fetch_chunk(self, query: sql.Composed, params: List[Any],
-                     offset: int, limit: int) -> Tuple[List[Dict[str, Any]], List[str]]:
+    def _fetch_chunk(
+        self, query: sql.Composed, params: List[Any], offset: int, limit: int
+    ) -> Tuple[List[Dict[str, Any]], List[str]]:
         """Fetch a single chunk of rows using a dedicated connection."""
         hook = EtlPostgresHook(self.conn_id)
         conn = hook.get_conn()
@@ -100,13 +109,17 @@ class PostgresSource(BaseSource):
         hook.close()
         return chunk, columns
 
-    def extract(self, context: Optional[dict] = None) -> Tuple[List[Dict[str, Any]], List[str]]:
+    def extract(
+        self, context: Optional[dict] = None
+    ) -> Tuple[List[Dict[str, Any]], List[str]]:
         started_at = time.time()
         query, params = self._build_query()
 
-        log.info(f"Extracting from {self.schema}.{self.table} "
-                 f"{'(incremental)' if self.incremental_column else '(full)'}"
-                 f"{f' ({self.num_parallel_chunks} parallel chunks)' if self.num_parallel_chunks > 1 else ''}")
+        log.info(
+            f"Extracting from {self.schema}.{self.table} "
+            f"{'(incremental)' if self.incremental_column else '(full)'}"
+            f"{f' ({self.num_parallel_chunks} parallel chunks)' if self.num_parallel_chunks > 1 else ''}"
+        )
         if self.incremental_column and params:
             log.info(f"Watermark: {params[0]}")
 
@@ -120,7 +133,9 @@ class PostgresSource(BaseSource):
             columns = []
             with ThreadPoolExecutor(max_workers=self.num_parallel_chunks) as pool:
                 futures = [
-                    pool.submit(self._fetch_chunk, query, params, i * chunk_size, chunk_size)
+                    pool.submit(
+                        self._fetch_chunk, query, params, i * chunk_size, chunk_size
+                    )
                     for i in range(self.num_parallel_chunks)
                 ]
                 for future in as_completed(futures):
@@ -141,7 +156,9 @@ class PostgresSource(BaseSource):
             log.info(f"Updated watermark to {max_val}")
 
         elapsed = round(time.time() - started_at, 2)
-        log.info(f"Extracted {len(all_rows)} rows from {self.schema}.{self.table} in {elapsed}s")
+        log.info(
+            f"Extracted {len(all_rows)} rows from {self.schema}.{self.table} in {elapsed}s"
+        )
         return all_rows, columns
 
     def get_row_count(self) -> int:
